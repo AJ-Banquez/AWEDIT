@@ -10,7 +10,21 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <script>
+        // Lógica de detección de tema por defecto antes de renderizar
+        function applyInitialTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+        applyInitialTheme();
+
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -30,182 +44,165 @@
         .sortable-ghost { opacity: 0.4; border: 2px dashed #008f39 !important; }
         .icon-container { transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .group:hover .icon-container { transform: scale(1.1) rotate(-5deg); }
+        .nav-scroll::-webkit-scrollbar { display: none; }
+        .nav-scroll { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 min-h-screen font-sans transition-colors duration-300">
 
-    <div id="loader-overlay" class="fixed inset-0 z-[9999] hidden bg-slate-900/60 flex flex-col items-center justify-center text-white">
+    <div id="loader-overlay" class="fixed inset-0 z-[9999] hidden bg-slate-900/60 flex flex-col items-center justify-center text-white p-4 text-center">
         <div class="w-16 h-16 border-4 border-t-wayuu-green border-slate-200 rounded-full animate-spin mb-4"></div>
-        <p id="loader-text" class="font-bold text-lg animate-pulse uppercase tracking-widest">Procesando...</p>
+        <p id="loader-text" class="font-bold text-lg animate-pulse uppercase tracking-widest text-white">Procesando...</p>
     </div>
 
-    <button onclick="toggleTheme()" class="fixed top-6 left-6 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-xl flex items-center gap-3 text-sm font-bold dark:text-white transition-all hover:bg-slate-50 dark:hover:bg-slate-800">
+    <button onclick="toggleTheme()" class="fixed bottom-6 right-6 md:top-6 md:left-6 md:bottom-auto md:right-auto z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-bold dark:text-white transition-all hover:scale-105">
         <i data-lucide="moon" id="theme-icon-svg" class="w-5 h-5 text-wayuu-orange"></i>
-        <span id="theme-text">Modo Oscuro</span>
+        <span id="theme-text" class="hidden sm:inline">Modo Oscuro</span>
     </button>
 
-    <div class="max-w-6xl mx-auto px-4 py-12">
-        <header class="text-center mb-12">
-            <div class="inline-block bg-gradient-to-r from-wayuu-green to-wayuu-orange px-8 py-3 rounded-2xl text-white font-extrabold text-3xl shadow-2xl mb-6 tracking-tighter">AWEDIT PRO</div>
-            <h1 class="text-4xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">Editor PDF de Alta Fidelidad</h1>
-            <p class="text-slate-500 dark:text-slate-400 font-medium text-sm tracking-widest uppercase">2026 • Edition</p>
+    <div class="max-w-6xl mx-auto px-4 py-8 md:py-12">
+        <header class="text-center mb-8 md:mb-12">
+            <div class="inline-block bg-gradient-to-r from-wayuu-green to-wayuu-orange px-6 py-2 md:px-8 md:py-3 rounded-2xl text-white font-extrabold text-2xl md:text-3xl shadow-2xl mb-4 tracking-tighter">AWEDIT PRO</div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">Editor PDF Profesional</h1>
+            <p class="text-slate-500 dark:text-slate-400 font-medium text-xs tracking-widest uppercase">2026 • Edition</p>
         </header>
 
-        <nav class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-2 flex gap-2 mb-10 shadow-lg overflow-x-auto">
-            <button class="nav-btn flex-1 py-4 px-4 font-bold rounded-2xl transition-all active-tab flex items-center justify-center gap-2 whitespace-nowrap" onclick="switchTab(0)">
-                <i data-lucide="layers" class="w-5 h-5"></i> Unir PDFs
+        <nav class="nav-scroll bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl md:rounded-3xl p-1.5 flex gap-1.5 mb-8 shadow-lg overflow-x-auto">
+            <button class="nav-btn flex-1 py-3 px-5 font-bold rounded-xl md:rounded-2xl transition-all active-tab flex items-center justify-center gap-2 whitespace-nowrap text-sm md:text-base" onclick="switchTab(0)">
+                <i data-lucide="layers" class="w-4 h-4 md:w-5 md:h-5"></i> Unir
             </button>
-            <button class="nav-btn flex-1 py-4 px-4 font-bold rounded-2xl transition-all text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2 whitespace-nowrap" onclick="switchTab(1)">
-                <i data-lucide="scissors" class="w-5 h-5"></i> Editar PDF
+            <button class="nav-btn flex-1 py-3 px-5 font-bold rounded-xl md:rounded-2xl transition-all text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2 whitespace-nowrap text-sm md:text-base" onclick="switchTab(1)">
+                <i data-lucide="scissors" class="w-4 h-4 md:w-5 md:h-5"></i> Editar
             </button>
-            <button class="nav-btn flex-1 py-4 px-4 font-bold rounded-2xl transition-all text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2 whitespace-nowrap" onclick="switchTab(2)">
-                <i data-lucide="file-image" class="w-5 h-5"></i> PDF a Imagen
+            <button class="nav-btn flex-1 py-3 px-5 font-bold rounded-xl md:rounded-2xl transition-all text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2 whitespace-nowrap text-sm md:text-base" onclick="switchTab(2)">
+                <i data-lucide="file-image" class="w-4 h-4 md:w-5 md:h-5"></i> PDF a Img
             </button>
-            <button class="nav-btn flex-1 py-4 px-4 font-bold rounded-2xl transition-all text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2 whitespace-nowrap" onclick="switchTab(3)">
-                <i data-lucide="image-plus" class="w-5 h-5"></i> Imagen a PDF
+            <button class="nav-btn flex-1 py-3 px-5 font-bold rounded-xl md:rounded-2xl transition-all text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2 whitespace-nowrap text-sm md:text-base" onclick="switchTab(3)">
+                <i data-lucide="image-plus" class="w-4 h-4 md:w-5 md:h-5"></i> Img a PDF
             </button>
         </nav>
 
-        <main class="box bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[40px] p-8 md:p-12 shadow-2xl">
+        <main class="box bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[30px] md:rounded-[40px] p-6 md:p-12 shadow-2xl">
             <style>
                 .box {
                 position: relative;
                 transform-style: preserve-3d;
-                border-radius: 40px; /* igual al rounded-[40px] */
-                z-index: 0;
                 }
-
                 .box::before {
                 content: "";
-                position: absolute;
-                inset: -1px;
-                background: conic-gradient(
-                    from 90deg at 10% -5%,
-                    #008f39,
-                    #f79d03,
-                    #ee6907,
-                    #e6390a,
-                    #069fe6,
-                    #d61039,
-                    #cf1261,
-                    #c71585,
-                    #cf1261,
-                    #d61039,
-                    #de0d0d,
-                    #ee6907,
-                    #f79d03,
-                    #008f39,
-                    #008f39
-                );
-                filter: blur(4px);
-                transform: translate3d(2px, 2px, -1px);
-                border-radius: inherit;
-                pointer-events: none;
-                z-index: -1;
+                position: absolute;	
+                inset: -3px;
+                background: conic-gradient(from 90deg at 40% -25%, #ffd700, #f79d03, #ee6907, #e6390a, #de0d0d, #d61039, #cf1261, #c71585, #cf1261, #d61039, #de0d0d, #ee6907, #f79d03, #ffd700, #ffd700, #ffd700);
+                filter: blur(20px);
+                transform: translate3d(1px,1px,-1px);
                 }
             </style>
+
             <section id="tab-0" class="tab-content block">
-                <div class="border-4 border-dashed border-wayuu-orange/20 hover:border-wayuu-orange/50 bg-wayuu-orange/[0.02] rounded-[32px] p-16 text-center cursor-pointer transition-all group" onclick="document.getElementById('input-0').click()">
-                    <div class="icon-container inline-flex items-center justify-center w-20 h-20 bg-wayuu-orange/10 rounded-3xl text-wayuu-orange mb-6">
-                        <i data-lucide="folder-plus" class="w-10 h-10"></i>
+                <div class="border-4 border-dashed border-wayuu-orange/20 hover:border-wayuu-orange/50 bg-wayuu-orange/[0.02] rounded-[24px] md:rounded-[32px] p-8 md:p-16 text-center cursor-pointer transition-all group" onclick="document.getElementById('input-0').click()">
+                    <div class="icon-container inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-wayuu-orange/10 rounded-2xl md:rounded-3xl text-wayuu-orange mb-4 md:mb-6">
+                        <i data-lucide="folder-plus" class="w-8 h-8 md:w-10 md:h-10"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Combinar Documentos</h3>
-                    <p class="text-sm text-slate-500 mt-2">Sube varios archivos y arrastra para reordenar</p>
+                    <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">Combinar Documentos</h3>
+                    <p class="text-xs md:text-sm text-slate-500 mt-2">Sube archivos y arrastra para reordenar</p>
                     <input type="file" id="input-0" class="hidden" multiple accept=".pdf" onchange="processPDFs(this.files, 'merge')">
                 </div>
-                <div id="grid-0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-10"></div>
-                <div id="bar-0" class="hidden border-t border-slate-100 dark:border-slate-800 mt-10 pt-8 justify-between items-center">
-                    <button class="bg-wayuu-green hover:bg-green-700 text-white px-8 py-4 rounded-2xl font-black shadow-xl flex items-center gap-3 transition-all" onclick="downloadPDF('merge')">
+                <div id="grid-0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 mt-8"></div>
+                <div id="bar-0" class="hidden border-t border-slate-100 dark:border-slate-800 mt-8 pt-6 flex-col sm:flex-row gap-4 justify-between items-center">
+                    <button class="w-full sm:w-auto bg-wayuu-green hover:bg-green-700 text-white px-8 py-4 rounded-2xl font-black shadow-xl flex items-center justify-center gap-3 transition-all" onclick="downloadPDF('merge')">
                         <i data-lucide="download-cloud" class="w-5 h-5"></i> GENERAR UNIÓN
                     </button>
-                    <button class="bg-red-50 text-red-600 border border-red-100 px-6 py-4 rounded-2xl font-bold hover:bg-red-100 transition-all" onclick="clearModule('merge')">LIMPIAR TODO</button>
+                    <button class="w-full sm:w-auto bg-red-50 text-red-600 border border-red-100 px-6 py-4 rounded-2xl font-bold" onclick="clearModule('merge')">LIMPIAR</button>
                 </div>
             </section>
 
             <section id="tab-1" class="tab-content hidden">
-                <div class="border-4 border-dashed border-blue-400/20 hover:border-blue-400/50 bg-blue-400/[0.02] rounded-[32px] p-16 text-center cursor-pointer transition-all group" onclick="document.getElementById('input-1').click()">
-                    <div class="icon-container inline-flex items-center justify-center w-20 h-20 bg-blue-500/10 rounded-3xl text-blue-500 mb-6">
-                        <i data-lucide="file-edit" class="w-10 h-10"></i>
+                <div class="border-4 border-dashed border-blue-400/20 hover:border-blue-400/50 bg-blue-400/[0.02] rounded-[24px] md:rounded-[32px] p-8 md:p-16 text-center cursor-pointer transition-all group" onclick="document.getElementById('input-1').click()">
+                    <div class="icon-container inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-blue-500/10 rounded-2xl md:rounded-3xl text-blue-500 mb-4 md:mb-6">
+                        <i data-lucide="file-edit" class="w-8 h-8 md:w-10 md:h-10"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Gestionar Páginas</h3>
-                    <p class="text-sm text-slate-500 mt-2">Elimina páginas individuales o cambia su orden</p>
+                    <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">Gestionar Páginas</h3>
                     <input type="file" id="input-1" class="hidden" accept=".pdf" onchange="processPDFs(this.files, 'edit')">
                 </div>
-                <div id="grid-1" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-10"></div>
-                <div id="bar-1" class="hidden border-t border-slate-100 dark:border-slate-800 mt-10 pt-8 justify-between items-center">
-                    <button class="bg-wayuu-green hover:bg-green-700 text-white px-8 py-4 rounded-2xl font-black shadow-xl flex items-center gap-3 transition-all" onclick="downloadPDF('edit')">
-                        <i data-lucide="save" class="w-5 h-5"></i> GUARDAR CAMBIOS
+                <div id="grid-1" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 mt-8"></div>
+                <div id="bar-1" class="hidden border-t border-slate-100 dark:border-slate-800 mt-8 pt-6 flex-col sm:flex-row gap-4 justify-between items-center">
+                    <button class="w-full sm:w-auto bg-wayuu-green hover:bg-green-700 text-white px-8 py-4 rounded-2xl font-black shadow-xl flex items-center justify-center gap-3" onclick="downloadPDF('edit')">
+                        <i data-lucide="save" class="w-5 h-5"></i> GUARDAR
                     </button>
-                    <button class="bg-red-50 text-red-600 border border-red-100 px-6 py-4 rounded-2xl font-bold hover:bg-red-100 transition-all" onclick="clearModule('edit')">LIMPIAR</button>
+                    <button class="w-full sm:w-auto bg-red-50 text-red-600 border border-red-100 px-6 py-4 rounded-2xl font-bold" onclick="clearModule('edit')">LIMPIAR</button>
                 </div>
             </section>
 
             <section id="tab-2" class="tab-content hidden">
-                <div class="border-4 border-dashed border-purple-400/20 hover:border-purple-400/50 bg-purple-400/[0.02] rounded-[32px] p-16 text-center cursor-pointer transition-all group" onclick="document.getElementById('input-2').click()">
-                    <div class="icon-container inline-flex items-center justify-center w-20 h-20 bg-purple-500/10 rounded-3xl text-purple-500 mb-6">
-                        <i data-lucide="gallery-thumbnails" class="w-10 h-10"></i>
+                <div class="border-4 border-dashed border-purple-400/20 hover:border-purple-400/50 bg-purple-400/[0.02] rounded-[24px] md:rounded-[32px] p-8 md:p-16 text-center cursor-pointer transition-all group" onclick="document.getElementById('input-2').click()">
+                    <div class="icon-container inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-purple-500/10 rounded-2xl md:rounded-3xl text-purple-500 mb-4 md:mb-6">
+                        <i data-lucide="gallery-thumbnails" class="w-8 h-8 md:w-10 md:h-10"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Extraer a Imagen (4K)</h3>
-                    <p class="text-sm text-slate-500 mt-2">Convierte cada página en un archivo PNG de alta resolución</p>
+                    <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">Extraer a Imagen</h3>
                     <input type="file" id="input-2" class="hidden" accept=".pdf" onchange="processToImage(this.files[0])">
                 </div>
-                <div id="grid-2" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-10"></div>
-                <div id="bar-2" class="hidden border-t border-slate-100 dark:border-slate-800 mt-10 pt-8 justify-end">
-                    <button class="bg-red-50 text-red-600 border border-red-100 px-8 py-4 rounded-2xl font-bold" onclick="clearModule('toImage')">LIMPIAR</button>
+                <div id="grid-2" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 mt-8"></div>
+                <div id="bar-2" class="hidden border-t border-slate-100 dark:border-slate-800 mt-8 pt-6 flex justify-end">
+                    <button class="w-full sm:w-auto bg-red-50 text-red-600 border border-red-100 px-8 py-4 rounded-2xl font-bold" onclick="clearModule('toImage')">LIMPIAR</button>
                 </div>
             </section>
 
             <section id="tab-3" class="tab-content hidden">
-                <div class="border-4 border-dashed border-emerald-400/20 hover:border-emerald-400/50 bg-emerald-400/[0.02] rounded-[32px] p-16 text-center cursor-pointer transition-all group" onclick="document.getElementById('input-3').click()">
-                    <div class="icon-container inline-flex items-center justify-center w-20 h-20 bg-emerald-500/10 rounded-3xl text-emerald-500 mb-6">
-                        <i data-lucide="image" class="w-10 h-10"></i>
+                <div class="border-4 border-dashed border-emerald-400/20 hover:border-emerald-400/50 bg-emerald-400/[0.02] rounded-[24px] md:rounded-[32px] p-8 md:p-16 text-center cursor-pointer transition-all group" onclick="document.getElementById('input-3').click()">
+                    <div class="icon-container inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-emerald-500/10 rounded-2xl md:rounded-3xl text-emerald-500 mb-4 md:mb-6">
+                        <i data-lucide="image" class="w-8 h-8 md:w-10 md:h-10"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Imágenes a PDF</h3>
-                    <p class="text-sm text-slate-500 mt-2">Crea un documento PDF profesional desde tus fotos</p>
+                    <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">Imágenes a PDF</h3>
                     <input type="file" id="input-3" class="hidden" multiple accept="image/*" onchange="processImages(this.files)">
                 </div>
-                <div id="grid-3" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-10"></div>
-                <div id="bar-3" class="hidden border-t border-slate-100 dark:border-slate-800 mt-10 pt-8 justify-between items-center">
-                    <button class="bg-wayuu-green hover:bg-green-700 text-white px-8 py-4 rounded-2xl font-black shadow-xl flex items-center gap-3 transition-all" onclick="downloadImageToPDF()">
+                <div id="grid-3" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6 mt-8"></div>
+                <div id="bar-3" class="hidden border-t border-slate-100 dark:border-slate-800 mt-8 pt-6 flex-col sm:flex-row gap-4 justify-between items-center">
+                    <button class="w-full sm:w-auto bg-wayuu-green hover:bg-green-700 text-white px-8 py-4 rounded-2xl font-black shadow-xl flex items-center justify-center gap-3" onclick="downloadImageToPDF()">
                         <i data-lucide="file-check" class="w-5 h-5"></i> CREAR DOCUMENTO
                     </button>
-                    <button class="bg-red-50 text-red-600 border border-red-100 px-6 py-4 rounded-2xl font-bold" onclick="clearModule('fromImage')">LIMPIAR</button>
+                    <button class="w-full sm:w-auto bg-red-50 text-red-600 border border-red-100 px-6 py-4 rounded-2xl font-bold" onclick="clearModule('fromImage')">LIMPIAR</button>
                 </div>
             </section>
         </main>
     </div>
 
 <script>
-    // Inicializar Iconos
+    // Iniciar Lucide
     lucide.createIcons();
-
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    let mergePages = [], editPages = [], imageList = [];
-
-    // --- SORTABLE ---
-    function initSortable(id, list, type) {
-        new Sortable(document.getElementById(id), {
-            animation: 150,
-            ghostClass: 'sortable-ghost',
-            onEnd: function (evt) {
-                const item = list.splice(evt.oldIndex, 1)[0];
-                list.splice(evt.newIndex, 0, item);
-                if(type === 'image') renderImageGrid();
-                else renderGrid(type);
-            }
-        });
+    
+    // Función para actualizar el UI del botón según el tema actual
+    function updateThemeUI() {
+        const isDark = document.documentElement.classList.contains('dark');
+        document.getElementById('theme-text').innerText = isDark ? 'Modo Claro' : 'Modo Oscuro';
+        const iconName = isDark ? 'sun' : 'moon';
+        const iconElement = document.getElementById('theme-icon-svg');
+        iconElement.setAttribute('data-lucide', iconName);
+        lucide.createIcons();
     }
+    
+    // Al cargar el DOM, actualizamos el icono
+    window.addEventListener('DOMContentLoaded', updateThemeUI);
 
-    // --- TEMAS ---
     function toggleTheme() {
         document.documentElement.classList.toggle('dark');
         const isDark = document.documentElement.classList.contains('dark');
-        document.getElementById('theme-text').innerText = isDark ? 'Modo Claro' : 'Modo Oscuro';
-        
-        // Cambiar icono dinámicamente
-        const iconName = isDark ? 'sun' : 'moon';
-        document.getElementById('theme-icon-svg').setAttribute('data-lucide', iconName);
-        lucide.createIcons();
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        updateThemeUI();
+    }
+
+    // El resto del código de procesamiento se mantiene igual...
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    let mergePages = [], editPages = [], imageList = [];
+
+    function initSortable(id, list, type) {
+        new Sortable(document.getElementById(id), {
+            animation: 150, ghostClass: 'sortable-ghost',
+            onEnd: function (evt) {
+                const item = list.splice(evt.oldIndex, 1)[0];
+                list.splice(evt.newIndex, 0, item);
+                type === 'image' ? renderImageGrid() : renderGrid(type);
+            }
+        });
     }
 
     function setLoader(show, text = "Procesando...") {
@@ -214,18 +211,16 @@
         show ? loader.classList.remove('hidden') : loader.classList.add('hidden');
     }
 
-    // --- LÓGICA CORE ---
     async function processPDFs(files, mode) {
-        setLoader(true, "Escaneando PDF...");
+        setLoader(true, "Cargando PDF...");
         const targetList = mode === 'merge' ? mergePages : editPages;
         if(mode === 'edit') targetList.length = 0;
-
         try {
             for (const file of files) {
                 const pdf = await pdfjsLib.getDocument(await file.arrayBuffer()).promise;
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
-                    const viewport = page.getViewport({ scale: 1.5 }); 
+                    const viewport = page.getViewport({ scale: 1.2 }); 
                     const canvas = document.createElement('canvas');
                     canvas.width = viewport.width; canvas.height = viewport.height;
                     await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
@@ -244,13 +239,13 @@
         grid.innerHTML = '';
         list.forEach((item, idx) => {
             const div = document.createElement('div');
-            div.className = 'relative group bg-slate-100 dark:bg-slate-800 p-3 rounded-2xl border-2 border-transparent hover:border-wayuu-green transition-all shadow-md cursor-move';
+            div.className = 'relative group bg-slate-100 dark:bg-slate-800 p-2 rounded-xl border-2 border-transparent hover:border-wayuu-green transition-all cursor-move shadow-md';
             div.innerHTML = `
-                <button class="absolute -top-3 -right-3 bg-red-500 text-white w-8 h-8 rounded-full font-bold shadow-lg z-20 hover:scale-110 flex items-center justify-center transition-transform" onclick="removePage('${mode}', ${idx})">
-                    <i data-lucide="x" class="w-4 h-4"></i>
+                <button class="absolute -top-2 -right-2 bg-red-500 text-white w-7 h-7 rounded-full font-bold z-20 flex items-center justify-center" onclick="removePage('${mode}', ${idx})">
+                    <i data-lucide="x" class="w-3 h-3"></i>
                 </button>
-                <img src="${item.canvas.toDataURL('image/jpeg', 0.5)}" class="w-full h-auto rounded-lg pointer-events-none">
-                <div class="mt-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-tighter">Pág ${idx + 1}</div>`;
+                <img src="${item.canvas.toDataURL('image/jpeg', 0.4)}" class="w-full rounded-lg pointer-events-none">
+                <div class="mt-2 text-center text-[9px] font-black text-slate-400 uppercase">Pág ${idx + 1}</div>`;
             grid.appendChild(div);
         });
         lucide.createIcons();
@@ -258,7 +253,7 @@
     }
 
     async function downloadPDF(mode) {
-        setLoader(true, "Generando documento final...");
+        setLoader(true, "Generando...");
         setTimeout(async () => {
             const list = mode === 'merge' ? mergePages : editPages;
             const doc = new jspdf.jsPDF('p', 'mm', 'a4');
@@ -273,26 +268,26 @@
 
     async function processToImage(file) {
         if(!file) return;
-        setLoader(true, "Extrayendo imágenes 4K...");
+        setLoader(true, "Convirtiendo...");
         const grid = document.getElementById('grid-2');
         grid.innerHTML = '';
         try {
             const pdf = await pdfjsLib.getDocument(await file.arrayBuffer()).promise;
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
-                const viewport = page.getViewport({ scale: 3.0 }); 
+                const viewport = page.getViewport({ scale: 2.0 }); 
                 const canvas = document.createElement('canvas');
                 canvas.width = viewport.width; canvas.height = viewport.height;
                 await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
                 const imgData = canvas.toDataURL('image/png');
                 const div = document.createElement('div');
-                div.className = 'relative group bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-lg border dark:border-slate-700';
+                div.className = 'relative bg-white dark:bg-slate-800 p-2 rounded-xl shadow-lg border dark:border-slate-700';
                 div.innerHTML = `
-                    <button class="absolute -top-3 -right-3 bg-red-500 text-white w-8 h-8 rounded-full font-bold shadow-lg z-20 flex items-center justify-center" onclick="this.parentElement.remove()">
-                        <i data-lucide="x" class="w-4 h-4"></i>
+                    <button class="absolute -top-2 -right-2 bg-red-500 text-white w-7 h-7 rounded-full font-bold flex items-center justify-center" onclick="this.parentElement.remove()">
+                        <i data-lucide="x" class="w-3 h-3"></i>
                     </button>
-                    <img src="${imgData}" class="rounded-lg mb-4 h-32 object-contain w-full">
-                    <button onclick="downloadURI('${imgData}', 'P${i}.png')" class="w-full bg-wayuu-green text-white py-3 rounded-xl text-[10px] font-black flex items-center justify-center gap-2">
+                    <img src="${imgData}" class="rounded-lg mb-2 h-28 object-contain w-full">
+                    <button onclick="downloadURI('${imgData}', 'P${i}.png')" class="w-full bg-wayuu-green text-white py-2 rounded-lg text-[9px] font-black flex items-center justify-center gap-2">
                         <i data-lucide="download" class="w-3 h-3"></i> PNG
                     </button>`;
                 grid.appendChild(div);
@@ -303,9 +298,8 @@
     }
 
     function processImages(files) {
-        setLoader(true, "Cargando imágenes...");
-        const newImages = Array.from(files);
-        imageList = [...imageList, ...newImages];
+        setLoader(true, "Cargando...");
+        imageList = [...imageList, ...Array.from(files)];
         renderImageGrid();
         initSortable('grid-3', imageList, 'image');
         setLoader(false);
@@ -316,12 +310,12 @@
         grid.innerHTML = '';
         imageList.forEach((f, idx) => {
             const div = document.createElement('div');
-            div.className = 'relative group bg-slate-100 dark:bg-slate-800 p-2 rounded-xl cursor-move';
+            div.className = 'relative bg-slate-100 dark:bg-slate-800 p-2 rounded-xl cursor-move';
             div.innerHTML = `
-                <button class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full font-bold shadow-lg z-20 flex items-center justify-center" onclick="removeImage(${idx})">
+                <button class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center" onclick="removeImage(${idx})">
                     <i data-lucide="x" class="w-3 h-3"></i>
                 </button>
-                <img src="${URL.createObjectURL(f)}" class="w-full h-32 object-cover rounded-lg">`;
+                <img src="${URL.createObjectURL(f)}" class="w-full h-24 object-cover rounded-lg">`;
             grid.appendChild(div);
         });
         lucide.createIcons();
@@ -329,7 +323,7 @@
     }
 
     async function downloadImageToPDF() {
-        setLoader(true, "Compilando PDF...");
+        setLoader(true, "Compilando...");
         setTimeout(async () => {
             const doc = new jspdf.jsPDF();
             for (let i = 0; i < imageList.length; i++) {
@@ -345,8 +339,7 @@
     }
 
     function removePage(mode, idx) {
-        if(mode === 'merge') mergePages.splice(idx, 1);
-        else editPages.splice(idx, 1);
+        mode === 'merge' ? mergePages.splice(idx, 1) : editPages.splice(idx, 1);
         renderGrid(mode);
     }
 
@@ -358,8 +351,7 @@
     function switchTab(idx) {
         document.querySelectorAll('.nav-btn').forEach((btn, i) => {
             btn.classList.toggle('active-tab', i === idx);
-            if(i !== idx) btn.classList.add('text-slate-500', 'dark:text-slate-400');
-            else btn.classList.remove('text-slate-500', 'dark:text-slate-400');
+            i !== idx ? btn.classList.add('text-slate-500', 'dark:text-slate-400') : btn.classList.remove('text-slate-500', 'dark:text-slate-400');
         });
         document.querySelectorAll('.tab-content').forEach((content, i) => {
             content.classList.toggle('hidden', i !== idx);
